@@ -6,12 +6,10 @@ from classes import Scene
 
 ASSETS_DIR = "assets"
 
-
 def asset_path(rel: Optional[str]) -> Optional[str]:
     if not rel:
         return None
     return os.path.join(ASSETS_DIR, rel)
-
 
 class AnimatedGIF:
     """Petit player d'animation GIF (frames + durées)."""
@@ -21,20 +19,30 @@ class AnimatedGIF:
         self.durations_ms = durations_ms
         self.i = 0
         self.acc = 0.0
+        self.loops = 0
+
         if not self.frames:
             self.frames = [pygame.Surface((1, 1), pygame.SRCALPHA)]
         if not self.durations_ms or len(self.durations_ms) != len(self.frames):
             self.durations_ms = [100] * len(self.frames)
 
+    def reset(self):
+        self.i = 0
+        self.acc = 0.0
+        self.loops = 0
+
     def update(self, dt_ms: float):
         if len(self.frames) <= 1:
             return
         self.acc += dt_ms
-        # Certains GIF ont des durations à 0/10ms -> on clamp pour éviter de "spin"
+
         cur_dur = max(20, int(self.durations_ms[self.i]))
         while self.acc >= cur_dur:
             self.acc -= cur_dur
             self.i = (self.i + 1) % len(self.frames)
+            if self.i == 0:
+                self.loops += 1
+
             cur_dur = max(20, int(self.durations_ms[self.i]))
 
     def get(self) -> pygame.Surface:
@@ -145,10 +153,12 @@ class AceUI:
 
         self.font_main = pygame.font.SysFont("timesnewroman", 38, bold=False)
         self.font_name = pygame.font.SysFont("timesnewroman", 28, bold=True)
+        self.font_hint = pygame.font.SysFont("timesnewroman", 18, bold=True)
         self.font_date = pygame.font.SysFont("timesnewroman", 35, bold=True)
 
         # cache d'assets: pygame.Surface ou AnimatedGIF
         self._cache: dict[str, Union[pygame.Surface, AnimatedGIF]] = {}
+        self._last_sprite_path: Optional[str] = None
 
         self.textbox_h = int(self.h * 0.28)
         self.textbox_rect = pygame.Rect(0, self.h - self.textbox_h, self.w, self.textbox_h)
@@ -305,17 +315,40 @@ class AceUI:
         if scene.textType == "date":
             txt = self.typewriter.visible_text()
             self._render_date_banner(full_bg_already_drawn=True, text=txt)
-            pygame.display.flip()
             return
 
         # Sprite personnage
         sprite = None
         if scene.character and scene.characterEmotion and scene.character.sprites:
+            # sprite principal (emotion)
             sprite_path = scene.character.sprites.get(scene.characterEmotion)
+
             if sprite_path:
                 sprite_path = self._resolve_sprite_path(sprite_path, self.is_text_done())
                 sprite_asset = self.get_img(sprite_path)
-                sprite = sprite_asset.get() if isinstance(sprite_asset, AnimatedGIF) else sprite_asset
+
+                # reset si on change de sprite (sinon le gif garde ses loops en cache)
+                if sprite_path != self._last_sprite_path:
+                    if isinstance(sprite_asset, AnimatedGIF):
+                        sprite_asset.reset()
+                    self._last_sprite_path = sprite_path
+
+                # Si backup demandé et le sprite principal est un GIF qui a déjà bouclé 1x => switch
+                if (
+                    scene.backupCharacterEmotion
+                    and isinstance(sprite_asset, AnimatedGIF)
+                    and sprite_asset.loops >= 1
+                ):
+                    backup_path = scene.character.sprites.get(scene.backupCharacterEmotion)
+                    if backup_path:
+                        backup_path = self._resolve_sprite_path(backup_path, True)
+                        backup_asset = self.get_img(backup_path)
+                        sprite = backup_asset.get() if isinstance(backup_asset, AnimatedGIF) else backup_asset
+                    else:
+                        sprite = sprite_asset.get()
+                else:
+                    sprite = sprite_asset.get() if isinstance(sprite_asset, AnimatedGIF) else sprite_asset
+
 
         if sprite and (scene.background == "backgrounds/waiting-room.jpg" or scene.background == "backgrounds/defense-assistant-side.jpg" or not scene.background):
             max_h = self.h - self.textbox_h + 30
@@ -389,7 +422,11 @@ class AceUI:
             chevron = self.font_main.render("»", True, pygame.Color(255, 220, 60))
             self.screen.blit(chevron, (self.w - 60, self.h - 55))
 
-        pygame.display.flip()
+        #hint en haut à droite de la boite de dialogue
+        box = pygame.Rect(self.w - 145, self.textbox_rect.y - 15, 135, 30)
+        pygame.draw.rect(self.screen, pygame.Color(20, 90, 140), box, border_radius=6)
+        hint = self.font_hint.render("Tab   Dossier", True, pygame.Color(255, 255, 255))
+        self.screen.blit(hint, (box.x + box.w - hint.get_width() - 18, box.y + 6))
 
 
     def _draw_dotted_lines(self, rect: pygame.Rect, lines: int = 3):
@@ -414,11 +451,6 @@ class AceUI:
       self.screen.blit(s, (x, y))
 
     def render_court_record(self, courtRecord, state: str, ev_i: int, pr_i: int):
-        """
-        state: 'evidence' ou 'profil'
-        ev_i: index evidence selectionné
-        pr_i: index profil selectionné
-        """
         # fond légèrement assombri
         overlay = pygame.Surface((self.w, self.h), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 120))
@@ -549,8 +581,42 @@ class AceUI:
             if x + thumb_size > strip.right:
                 break
 
-        # hints touches
-        hint = self.font_name.render("TAB Retour   R Preuves/Profils   Q/D Sélection", True, pygame.Color(255, 255, 255))
-        self.screen.blit(hint, (panel.x + panel.w - hint.get_width() - 18, panel.bottom - 28))
+        # hints touches avec un rectangle pour le fond
+        hint_bg = pygame.Rect(panel.x + panel.w - 400, panel.bottom - 15, 400, 30)
+        pygame.draw.rect(self.screen, pygame.Color(20, 90, 140), hint_bg, border_radius=6)
+        hint = self.font_hint.render("TAB Retour   R Preuves/Profils   Q/D Sélection", True, pygame.Color(255, 255, 255))
+        self.screen.blit(hint, (panel.x + panel.w - hint.get_width() - 18, panel.bottom - 8))
 
-        pygame.display.flip()
+    def render_choice_menu(self, options, ch_i: int):
+        # fond légèrement assombri
+        overlay = pygame.Surface((self.w, self.h), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        self.screen.blit(overlay, (0, 0))
+
+        # options
+        option_y = 250
+        for option in options:
+            is_selected = (options.index(option) == ch_i)
+            color_bg = pygame.Color(50, 120, 200)
+            color_text = pygame.Color(255, 255, 255)
+
+            box_w = self.w - 200
+            box_h = 70
+            box_x = (self.w - box_w) // 2
+            box = pygame.Rect(box_x, option_y, box_w, box_h)
+            pygame.draw.rect(self.screen, color_bg, box, border_radius=6)
+            pygame.draw.rect(self.screen, pygame.Color(200, 200, 220), box, 3, border_radius=6)
+            if is_selected:
+                pygame.draw.rect(self.screen, pygame.Color(255, 220, 60), box, 4, border_radius=6)
+
+            # texte
+            txt_img = self.font_main.render(option.text, True, color_text)
+            self.screen.blit(txt_img, (box.x + 20, box.y + (box.h - txt_img.get_height()) // 2))
+
+            option_y += box_h + 30
+
+        # hint touches
+        box = pygame.Rect(self.w - 320, option_y - 20, 300, 30)
+        pygame.draw.rect(self.screen, pygame.Color(20, 90, 140), box, border_radius=6)
+        hint = self.font_hint.render("Z/S Sélection   Entrée Confirmer", True, pygame.Color(255, 255, 255))
+        self.screen.blit(hint, (box.x + box.w - hint.get_width() - 18, box.bottom - 28))

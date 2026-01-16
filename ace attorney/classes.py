@@ -21,6 +21,7 @@ class Scene:
     background: Optional[str] = None
     character: Optional[Character] = None
     characterEmotion: Optional[str] = None
+    backupCharacterEmotion: Optional[str] = None
     extraElements: Optional[List[str]] = None
     characterText: Optional[str] = None
     textType: Optional[TextType] = None
@@ -34,7 +35,6 @@ NodeType = Literal["dialogue", "choice", "action", "testimony"]
 @dataclass
 class Option:
     text: str
-    isCorrect: bool
     nextId: Optional[str] = None
 
 

@@ -55,6 +55,7 @@ class Game:
     courtRecordState: Literal["evidence", "profil"] = "evidence"
     selectedEvidenceIndex: int = 0
     selectedProfilIndex: int = 0
+    selectedChoiceIndex: int = 0
 
     def __init__(self, nodes: dict[str, Node], starting_node_id: str, courtRecord: CourtRecord, lifes: int = 5):
         self.nodes = nodes
@@ -65,6 +66,13 @@ class Game:
 
     def get_current_node(self) -> Node:
         return self.nodes[self.currentNodeId]
+    
+    def check_choice(self):
+        node = self.get_current_node()
+        if node.type == "choice" and node.options:
+            selected_option = node.options[self.selectedChoiceIndex]
+            if selected_option.nextId and selected_option.nextId in self.nodes:
+                self.currentNodeId = selected_option.nextId
 
     def go_next(self):
         node = self.get_current_node()
@@ -121,6 +129,22 @@ class Game:
                           self.selectedProfilIndex = 0
                       continue
 
+                  if event.key == pygame.K_z and node.type == "choice" and node.options and self.courtRecordOpen == False:
+                    n = len(node.options) if node.options else 0
+                    if n > 0 and self.selectedChoiceIndex > 0 and not self.courtRecordOpen:
+                        self.selectedChoiceIndex = self.selectedChoiceIndex - 1
+                        continue
+
+                  if event.key == pygame.K_s and node.type == "choice" and node.options and self.courtRecordOpen == False:
+                    n = len(node.options) if node.options else 0
+                    if n > 0 and self.selectedChoiceIndex < n - 1 and not self.courtRecordOpen:
+                        self.selectedChoiceIndex = self.selectedChoiceIndex + 1
+                        continue
+                    
+                  if event.key == pygame.K_RETURN and node.type == "choice" and node.options and self.courtRecordOpen == False:
+                      self.check_choice()
+                      continue
+
                   # Si le dossier est ouvert : on gère uniquement la navigation dossier
                   if self.courtRecordOpen:
                       if event.key == pygame.K_r:
@@ -131,7 +155,7 @@ class Game:
                               n = len(self.courtRecord.evidences)
                               if n > 0:
                                   self.selectedEvidenceIndex = (self.selectedEvidenceIndex - 1) % n
-                          else:
+                          elif node.type != "choice":
                               n = len(self.courtRecord.profils)
                               if n > 0:
                                   self.selectedProfilIndex = (self.selectedProfilIndex - 1) % n
@@ -141,7 +165,7 @@ class Game:
                               n = len(self.courtRecord.evidences)
                               if n > 0:
                                   self.selectedEvidenceIndex = (self.selectedEvidenceIndex + 1) % n
-                          else:
+                          elif node.type != "choice":
                               n = len(self.courtRecord.profils)
                               if n > 0:
                                   self.selectedProfilIndex = (self.selectedProfilIndex + 1) % n
@@ -161,6 +185,10 @@ class Game:
 
             # Dessine
             ui.render_scene(node.scene)
+
+            if node.type == "choice" and node.options and ui.is_text_done():
+              ui.render_choice_menu(node.options, self.selectedChoiceIndex)
+
             if self.courtRecordOpen:
               ui.render_court_record(
                   self.courtRecord,
@@ -168,5 +196,7 @@ class Game:
                   self.selectedEvidenceIndex,
                   self.selectedProfilIndex
               )
+
+            pygame.display.flip()
 
         pygame.quit()
