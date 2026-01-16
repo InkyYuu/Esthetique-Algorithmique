@@ -1,0 +1,1036 @@
+from classes import Character, Scene, Node, Evidence, CourtRecord
+
+characters = {
+      "Phoenix": Character(name="Phoenix Wright",
+          sprites={
+              "abashed": "characters/phoenix/abashed.gif",
+              "abashed-talking": "characters/phoenix/abashed-talking.gif",
+              "confident": "characters/phoenix/confident.gif",
+              "confident-talking": "characters/phoenix/confident-talking.gif",
+              "determined": "characters/phoenix/determined.gif",
+              "determined-talking": "characters/phoenix/determined-talking.gif",
+              "normal": "characters/phoenix/normal.gif",
+              "normal-talking": "characters/phoenix/normal-talking.gif",
+              "thinking": "characters/phoenix/thinking.gif",
+              "thinking-talking": "characters/phoenix/thinking-talking.gif",
+              "holding-document": "characters/phoenix/holding-document.gif",
+              "holding-document-talking": "characters/phoenix/holding-document-talking.gif",
+              "nodding-head": "characters/phoenix/nodding-head.gif",
+              "shaking-head": "characters/phoenix/shaking-head.gif",
+              "shocked": "characters/phoenix/shocked.gif",
+              "shocked-talking": "characters/phoenix/shocked-talking.gif",
+              "slamming-bench": "characters/phoenix/slamming-bench.gif",
+              "sweating": "characters/phoenix/sweating.gif",
+              "sweating-talking": "characters/phoenix/sweating-talking.gif",
+              "pointing": "characters/phoenix/pointing.gif",
+              "pointing-talking": "characters/phoenix/pointing-talking.gif",
+              "objecting": "characters/phoenix/objecting.gif",
+          }),
+
+      "Mia": Character(
+          name="Mia Fey",
+          age=27,
+          description="Avocate en chef du cabinet Fey & Co. Ma patronne est un très bon avocat de la défense.",
+          photo="characters/mia/profile.png",
+          sprites={
+              "grinning": "characters/mia/grinning.gif",
+              "grinning-talking": "characters/mia/grinning-talking.gif",
+              "normal": "characters/mia/normal.gif",
+              "normal-talking": "characters/mia/normal-talking.gif",
+              "smiling": "characters/mia/smiling.gif",
+              "smiling-talking": "characters/mia/smiling-talking.gif",
+              "surprised": "characters/mia/surprised.gif",
+              "surprised-talking": "characters/mia/surprised-talking.gif",
+              "exasperated": "characters/mia/exasperated.gif",
+              "exasperated-talking": "characters/mia/exasperated-talking.gif",
+              "sad": "characters/mia/sad.gif",
+              "sad-talking": "characters/mia/sad-talking.gif",
+              "shocked": "characters/mia/shocked.gif",
+              "shocked-talking": "characters/mia/shocked-talking.gif",
+              "stern": "characters/mia/stern.gif",
+              "stern-talking": "characters/mia/stern-talking.gif",
+          },
+      ),
+
+      "Paul": Character(
+          name="Paul Defès",
+          age=23,
+          description="L'accusé dans cette affaire. Un type sympathique et mon ami depuis l'école primaire.",
+          photo="characters/paul/profile.png",
+          sprites={
+              "angry": "characters/paul/angry.gif",
+              "confident": "characters/paul/confident.gif",
+              "confident-talking": "characters/paul/confident-talking.gif",
+              "crying": "characters/paul/crying.gif",
+              "crying-talking": "characters/paul/crying-talking.gif",
+              "happy": "characters/paul/happy.gif",
+              "happy-talking": "characters/paul/happy-talking.gif",
+              "normal": "characters/paul/normal.gif",
+              "normal-talking": "characters/paul/normal-talking.gif",
+              "scratching-head": "characters/paul/scratching-head.gif",
+              "scratching-head-talking": "characters/paul/scratching-head-talking.gif",
+              "thinking": "characters/paul/thinking.gif",
+              "thinking-talking": "characters/paul/thinking-talking.gif",
+              "thumbs-up": "characters/paul/thumbs-up.gif",
+              "thumbs-up-talking": "characters/paul/thumbs-up-talking.gif",
+              "sweating": "characters/paul/sweating.gif"
+          }
+      ),
+
+      "Juge": Character(
+          name="Juge",
+          sprites={
+              "normal": "characters/juge/normal.gif",
+              "normal-talking": "characters/juge/normal-talking.gif",
+              "stern": "characters/juge/stern.gif",
+              "stern-talking": "characters/juge/stern-talking.gif",
+              "surprised": "characters/juge/surprised.gif",
+              "surprised-talking": "characters/juge/surprised-talking.gif",
+              "thinking": "characters/juge/thinking.gif",
+              "nodding-head": "characters/juge/nodding-head.gif",
+              "shaking-head": "characters/juge/shaking-head.gif",
+          }
+      ),
+
+      "Victor": Character("Victor Boulay",
+          age=52,
+          description="Représentant de l'accusation. Manque de charisme. Souvent incapable d'imposer son point de vue.",
+          photo="characters/victor/profile.png",
+          sprites={
+              "confident": "characters/victor/confident.gif",
+              "confident-talking": "characters/victor/confident-talking.gif",
+              "normal": "characters/victor/normal.gif",
+              "normal-talking": "characters/victor/normal-talking.gif",
+              "shocked": "characters/victor/shocked.gif",
+              "shocked-talking": "characters/victor/shocked-talking.gif",
+              "sweating": "characters/victor/sweating.gif",
+              "sweating-talking": "characters/victor/sweating-talking.gif",
+          }),
+
+      "Frank": Character("Frank Khavu",
+          age=45,
+          description="Témoin (vendeur de journaux).",
+          photo="characters/frank/profile.png",
+          sprites={
+              "bald": "characters/frank/bald.gif",
+              "bald-talking": "characters/frank/bald-talking.gif",
+              "normal": "characters/frank/normal.gif",
+              "normal-talking": "characters/frank/normal-talking.gif",
+              "glaring": "characters/frank/glaring.gif",
+              "glaring-talking": "characters/frank/glaring-talking.gif",
+              "twitching": "characters/frank/twitching.gif",
+              "twitching-talking": "characters/frank/twitching-talking.gif",
+              "break": "characters/frank/break.gif",
+              "damage": "characters/frank/damaged.gif",
+              "toss": "characters/frank/toss.gif",
+          }),
+
+      "Cindy": Character("Cindy Stone",
+          age=28,
+          description="La victime dans cette affaire. Mannequin, elle vivait seule dans son appartement.",
+          photo="characters/cindy/profile.png",
+      ),
+
+      "Horloge": Character(name="Horloge", photo="objects/clock.gif"),
+}
+
+evidences = {
+  "badge": Evidence(
+      name="Badge d'avocat",
+      description="Personne ne croirait que je suis avocat de la défense si je ne portais pas ce badge.",
+      image="evidences/badge.png"
+  ),
+
+  "statue": Evidence(
+      name="Statue",
+      description="Statue de la forme du \"Penseur\". Assez lourde.",
+      image="evidences/statue.png"
+  ),
+
+  "passport": Evidence(
+      name="Passeport",
+      description="La victime est apparemment revenue de Sidney le 30/07, soit la veille du meurtre.",
+      image="evidences/passport.png",
+  ),
+
+  "rapport-autopsie": Evidence(
+      name="Rapport d'autopsie de Cindy",
+      description="Décès : le 31/07, entre 16H et 17H. Cause du décès : hémorragie causée par un coup violent.",
+      image="evidences/rapport-autopsie.png"
+  ),
+
+  "releve-panne-courant": Evidence(
+      name="Relevé de panne de courant",
+      description="L'immeuble de Mlle Stone a subi une panne de courant entre midi et 18h le jour du crime.",
+      image="evidences/releve-panne-courant.png"
+  ),
+}
+
+def build_nodes_demo() -> dict[str, Node]:
+  
+    WAITING_ROOM_BG = "backgrounds/waiting-room.jpg"
+    DEFENSE_SIDE_BG = "backgrounds/defense-side.jpg"
+    PROSECUTOR_SIDE_BG = "backgrounds/prosecutor-side.jpg"
+    WITNESS_SIDE_BG = "backgrounds/witness-side.jpg"
+    JUDGE_SIDE_BG = "backgrounds/judge-side.jpg"
+    ASSISTANT_SIDE_BG = "backgrounds/defense-assistant-side.jpg"
+
+    nodes = [
+        Node(
+            id="q1_date",
+            type="dialogue",
+            scene=Scene(
+                textType="date",
+                text="3 août, 9h47\nTribunal fédéral\nSalle des accusés n° 2",
+            ),
+            nextId="q1_1",
+        ),
+
+        Node(
+            id="q1_1",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                characterText="Phoenix",
+                textType="thought",
+                text="(Pfiou, qu'est-ce que je peux être nerveux !)",
+                music="musics/courtroom-lounge.mp3",
+            ),
+            nextId="q1_2",
+        ),
+
+        Node(
+            id="q1_2",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                characterText="Mia",
+                textType="dialogue",
+                text="Wright !",
+            ),
+            nextId="q1_3",
+        ),
+
+        Node(
+            id="q1_3",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="smiling",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Oh, bon-bonjour, Patron.",
+            ),
+            nextId="q1_4",
+        ),
+
+        Node(
+            id="q1_4",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="normal-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="Ouf, je suis contente d'être arrivée à temps.",
+            ),
+            nextId="q1_5",
+        ),
+
+        Node(
+            id="q1_5",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="smiling-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="Alors ça y est, on y est... ton premier procès !",
+            ),
+            nextId="q1_6",
+        ),
+
+        Node(
+            id="q1_6",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="smiling",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Je-Je ne m'étais jamais senti aussi nerveux depuis le lycée et nos faux p-procès !",
+            ),
+            nextId="q1_7",
+        ),
+
+        Node(
+            id="q1_7",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="Eh bien, il est grand temps de te replonger dans le monde merveilleux de la justice !",
+            ),
+            nextId="q1_8",
+        ),
+
+        Node(
+            id="q1_8",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="normal",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Oui, euh... Je... Vous devez avoir raison.",
+            ),
+            nextId="q1_9",
+        ),
+
+        Node(
+            id="q1_9",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="normal",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Vous savez Patron...",
+            ),
+            nextId="q1_10",
+        ),
+
+        Node(
+            id="q1_10",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="normal",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Je suis désolé que vous ayez dû venir jusqu'ici à cause de moi...",
+            ),
+            nextId="q1_11",
+        ),
+
+
+        Node(
+            id="q1_11",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="normal-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="Mais pas du tout, Phoenix ! Je ne manquerais tes débuts pour rien au monde !",
+            ),
+            nextId="q1_12",
+        ),
+
+        Node(
+            id="q1_12",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="normal-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="N'empêche, je suis impressionnée !",
+            ),
+            nextId="q1_13",
+        ),
+        Node(
+            id="q1_13",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="smiling-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="Beaucoup n'auraient pas accepté un procès pour meurtre aussi rapidement.",
+            ),
+            nextId="q1_14",
+        ),
+
+        Node(
+            id="q1_14",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="smiling-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="Ca en dit long sur toi... et sur ton client également.",
+            ),
+            nextId="q1_15",
+        ),
+
+        Node(
+            id="q1_15",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="smiling",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Hum, merci.",
+            ),
+            nextId="q1_16",
+        ),
+
+        Node(
+            id="q1_16",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="smiling",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="En fait c'est parce que je lui dois un service.",
+            ),
+            nextId="q1_17",
+        ),
+
+        Node(
+            id="q1_17",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="Un service ?",
+            ),
+            nextId="q1_18",
+        ),
+
+        Node(
+            id="q1_18",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised-talking",
+                characterText="Mia",  
+                textType="dialogue",
+                text="Tu veux dire que tu connaissait l'accusé avant cette affaire ?",
+            ),
+            nextId="q1_19",
+        ),
+
+        Node(
+            id="q1_19",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Oui.",
+            ),
+            nextId="q1_20",
+        ),
+
+        Node(
+            id="q1_20",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="En fait, c'est un peu grâce à lui que je fais ce métier.",
+            ),
+            nextId="q1_21",
+        ),
+
+        Node(
+            id="q1_21",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Il est l'une des raisons qui m'ont poussé à devenir avocat.",
+            ),
+            nextId="q1_22",
+        ),
+
+        Node(
+            id="q1_22",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="smiling-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="Eh bien, ça c'est une nouvelle !",
+            ),
+            nextId="q1_23",
+        ),
+
+        Node(
+            id="q1_23",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="normal",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Je veux le sortir de là par tous les moyens !",
+            ),
+            nextId="q1_24",
+        ),
+
+        Node(
+            id="q1_24",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="normal",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Je veux juste... je veux vraiment l'aider. Je lui dois énormément.",
+            ),
+            nextId="q1_25",
+        ),
+
+        Node(
+            id="q1_25",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised",
+                characterText="? ? ?",
+                textType="testimony",
+                text="(Tout est fini !)",
+            ),
+            nextId="q1_26",
+        ),
+
+        Node(
+            id="q1_26",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised",
+                characterText="? ? ?",
+                textType="testimony",
+                text="(Ma vie, tout, tout est fini !)",
+            ),
+            nextId="q1_27",
+        ),
+
+        Node(
+            id="q1_27",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised",
+                characterText="Mia",
+                textType="dialogue",
+                text="...",
+            ),
+            nextId="q1_28",
+        ),
+
+        Node(
+            id="q1_28",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="Ce ne serait pas ton client qu'on entend hurler ?",
+            ),
+            nextId="q1_29",
+        ),
+
+        Node(
+            id="q1_29",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="normal",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Oui... c'est bien lui.",
+            ),
+            nextId="q1_30",
+        ),
+        Node(
+            id="q1_30",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="normal",
+                characterText="? ? ?",
+                textType="testimony",
+                text="(Absence ! Désespoir ! Ohhhh !)",
+            ),
+            nextId="q1_31",
+        ),
+        Node(
+            id="q1_31",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised",
+                characterText="? ? ?",
+                textType="testimony",
+                text="(Je vais le faire, je vais mourir !!!)",
+            ),
+            nextId="q1_32",
+        ),
+        Node(
+            id="q1_32",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="surprised-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="On dirait qu'il souhaite mourir...",
+            ),
+            nextId="q1_33",
+        ),
+        Node(
+            id="q1_33",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Mia"],
+                characterEmotion="smiling",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Hum, oui. *soupir*",
+            ),
+            nextId="q1_34",
+        ),
+        Node(
+            id="q1_34",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Paul"],
+                characterEmotion="crying-talking",
+                characterText="Defès",
+                textType="dialogue",
+                text="Nick !!!",
+            ),
+            nextId="q1_35",
+        ),
+        Node(
+            id="q1_35",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Paul"],
+                characterEmotion="crying",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Salut. Salut Paul.",
+            ),
+            nextId="q1_36",
+        ),
+        Node(
+            id="q1_36",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Paul"],
+                characterEmotion="thumbs-up-talking",
+                characterText="Defès",
+                textType="dialogue",
+                text="Mec, je suis si coupable ! Dis leur que je suis coupable !",
+            ),
+            nextId="q1_37",
+        ),
+        Node(
+            id="q1_37",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Paul"],
+                characterEmotion="thumbs-up-talking",
+                characterText="Defès",
+                textType="dialogue",
+                text="Condamnez-moi à la peine de mort ! J'ai pas peur de mourir !",
+            ),
+            nextId="q1_38",
+        ),
+        Node(
+            id="q1_38",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Paul"],
+                characterEmotion="thumbs-up",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Quoi ? Qu'est-ce qui ne va pas, Paul ?",
+            ),
+            nextId="q1_39",
+        ),
+        Node(
+            id="q1_39",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Paul"],
+                characterEmotion="crying-talking",
+                characterText="Defès",
+                textType="dialogue",
+                text="Bah, c'est fini... JE suis fini ! Fini !",
+            ),
+            nextId="q1_40",
+        ),
+        Node(
+            id="q1_40",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Paul"],
+                characterEmotion="crying-talking",
+                characterText="Defès",
+                textType="dialogue",
+                text="Je peux pas vivre sans elle ! Je peux pas !",
+            ),
+            nextId="q1_41",
+        ),
+        Node(
+            id="q1_41",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Paul"],
+                characterEmotion="crying-talking",
+                characterText="Defès",
+                textType="dialogue",
+                text="Qui... qui me l'a prise, Nick ? Qui a bien pu faire ça ?",
+            ),
+            nextId="q1_42",
+        ),
+        Node(
+            id="q1_42",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Paul"],
+                characterEmotion="crying-talking",
+                characterText="Defès",
+                textType="dialogue",
+                text="Allez, Nick, tu dois me le dire ! Qui m'a pris ma copine ?",
+            ),
+            nextId="q1_43",
+        ),
+        Node(
+            id="q1_43",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Paul"],
+                characterEmotion="crying",
+                characterText="Phoenix",
+                textType="thought",
+                text="(Hmm, la personne responsable de la mort de ta petite amie ?)",
+            ),
+            nextId="q1_44",
+        ),
+        Node(
+            id="q1_44",
+            type="dialogue",
+            scene=Scene(
+                background=WAITING_ROOM_BG,
+                character=characters["Paul"],
+                characterEmotion="crying",
+                characterText="Phoenix",
+                textType="thought",
+                text="(D'après les journaux, c'est toi...)",
+            ),
+            nextId="q1_45",
+        ),
+        Node(
+            id="q1_45",
+            type="dialogue",
+            scene=Scene(
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Mon nom est Phoenix Wright.",          
+                music="None",
+            ),
+            nextId="q1_46",
+        ),
+        Node(
+            id="q1_46",
+            type="dialogue",
+            scene=Scene(
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Voici les faits :",
+            ),
+            nextId="q1_47",
+        ),
+        Node(
+            id="q1_47",
+            type="dialogue",
+            scene=Scene(
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Ma première affaire est on ne peut plus simple.",
+            ),
+            nextId="q1_48",
+        ),
+        Node(
+            id="q1_48",
+            type="dialogue",
+            scene=Scene(
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Une femme a été tuée dans son appartement.",
+            ),
+            nextId="q1_49",
+        ),
+        Node(
+            id="q1_49",
+            type="dialogue",
+            scene=Scene(
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Le malheureux qui a été accusé était son petit ami :",
+            ),
+            nextId="q1_50",
+        ),
+        Node(
+            id="q1_50",
+            type="dialogue",
+            scene=Scene(
+                character=characters["Paul"],
+                characterEmotion="thumbs-up",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Paul Defès... mon meilleur ami depuis l'école primaire.",
+            ),
+            nextId="q1_51",
+        ),
+        Node(
+            id="q1_51",
+            type="dialogue",
+            scene=Scene(
+                character=characters["Paul"],
+                characterEmotion="thumbs-up",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="A l'école, on avait un dicton, \"Quand Paul Defès arrive, tout part à la dérive\".",
+            ),
+            nextId="q1_52",
+        ),
+        Node(
+            id="q1_52",
+            type="dialogue",
+            scene=Scene(
+                character=characters["Paul"],
+                characterEmotion="crying",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Depuis 23 ans que je le connais, ça s'est souvent confirmé.",
+            ),
+            nextId="q1_53",
+        ),
+        Node(
+            id="q1_53",
+            type="dialogue",
+            scene=Scene(
+                character=characters["Paul"],
+                characterEmotion="crying",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Il a le chic pour se mettre dans le pétrin.",
+            ),
+            nextId="q1_54",
+        ),
+        Node(
+            id="q1_54",
+            type="dialogue",
+            scene=Scene(
+                character=characters["Paul"],
+                characterEmotion="crying",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Mais je peux dire une chose : en général, ce n'est pas de sa faute. Ce gars a la guigne !",
+            ),
+            nextId="q1_55",
+        ),
+        Node(
+            id="q1_55",
+            type="dialogue",
+            scene=Scene(
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Mais je sais mieux que quiconque qu'au fond c'est un bon gars.",
+            ),
+            nextId="q1_56",
+        ),
+        Node(
+            id="q1_56",
+            type="dialogue",
+            scene=Scene(
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Et puis je lui suis redevable. Alors j'ai accepté l'affaire, pour le laver de tout soupçon.",
+            ),
+            nextId="q1_57",
+        ),
+        Node(
+            id="q1_57",
+            type="dialogue",
+            scene=Scene(
+                characterText="Phoenix",
+                textType="dialogue",
+                text="Et c'est exactement ce que je vais faire !",
+            ),
+            nextId="q2_date",
+        ),
+
+        # Partie 2 : au tribunal
+
+        Node(
+            id="q2_date",
+            type="dialogue",
+            scene=Scene(
+                textType="date",
+                text="3 août 10h\nTribunal fédéral\nSalle d'audience n° 2",
+            ),
+            nextId="q2_1",
+        ),
+        Node(
+            id="q2_1",
+            type="dialogue",
+            scene=Scene(
+                background=JUDGE_SIDE_BG,
+                character=characters["Juge"],
+                characterEmotion="normal-talking",
+                characterText="Juge",
+                textType="dialogue",
+                text="Court is now in session for the trial of Mr. Paul Defès.",
+                music="musics/court-begins.mp3",
+            ),
+            nextId="q2_2",
+        ),
+        Node(
+            id="q2_2",
+            type="dialogue",
+            scene=Scene(
+                background=JUDGE_SIDE_BG,
+                character=characters["Juge"],
+                characterEmotion="normal-talking",
+                characterText="Juge",
+                textType="dialogue",
+                text="The prosecution may call its first witness.",
+            ),
+            nextId="q2_3",
+        ),
+        Node(
+            id="q2_3",
+            type="dialogue",
+            scene=Scene(
+                background=PROSECUTOR_SIDE_BG,
+                character=characters["Victor"],
+                characterEmotion="normal-talking",
+                characterText="Victor",
+                textType="dialogue",
+                text="The prosecution is ready, Your Honor.",
+            ),
+            nextId="q2_4",
+        ),
+        Node(
+            id="q2_4",
+            type="dialogue",
+            scene=Scene(
+                background=DEFENSE_SIDE_BG,
+                character=characters["Phoenix"],
+                characterEmotion="normal-talking",
+                characterText="Phoenix",
+                textType="dialogue",
+                text="The, um, defense is ready, Your Honor.",
+            ),
+            nextId="q2_5",
+        ),
+        Node(
+            id="q2_5",
+            type="dialogue",
+            scene=Scene(
+                background=ASSISTANT_SIDE_BG,
+                character=characters["Mia"],
+                characterEmotion="stern-talking",
+                characterText="Mia",
+                textType="dialogue",
+                text="I hope you're prepared, Wright. This won't be an easy case.",
+            ),
+            nextId="q2_6",
+        ),
+        Node(
+            id="q2_6",
+            type="dialogue",
+            scene=Scene(
+                background=WITNESS_SIDE_BG,
+                character=characters["Frank"],
+                characterEmotion="normal",
+                characterText="Mia",
+                textType="dialogue",
+                text="The witness seems to be very clever and prepared.",
+            ),
+            nextId=None,
+        ),
+    ]
+
+    return {n.id: n for n in nodes}
+
+def build_court_record_demo() -> CourtRecord:
+    evidences = [Evidence(
+          name="Badge d'avocat",
+          description="Personne ne croirait que je suis avocat de la défense si je ne portais pas ce badge.",
+          image="evidences/badge.png"
+      ),
+      Evidence(
+          name="Rapport d'autopsie de Cindy",
+          description="Décès : le 31/07, entre 16H et 17H. Cause du décès : hémorragie causée par un coup violent.",
+          image="evidences/rapport-autopsie.png"
+      )]
+
+    profiles = [characters["Mia"], characters["Paul"], characters["Cindy"], characters["Victor"]]
+
+    return CourtRecord(evidences=evidences, profils=profiles)
